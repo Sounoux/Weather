@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
-import 'currentWeather.dart';
+import 'current.dart';
+import 'models/location.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  List<Location> locations = [
+    Location(city: "paris", country: "france", lat: "48.853", lon: "2.349")
+  ];
+
+  MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Weather App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const CurrentWeatherPage(),
+      home: CurrentWeatherPage(locations, context),
     );
   }
 }
