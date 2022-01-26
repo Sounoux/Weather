@@ -1,4 +1,8 @@
 class Weather {
+  final double lat;
+  final double long;
+  final String country;
+  final String city;
   final double temp;
   final double feelsLike;
   final double low;
@@ -10,7 +14,11 @@ class Weather {
   final String icon;
 
   Weather(
-      {required this.temp,
+      {required this.city,
+      required this.country,
+      required this.lat,
+      required this.long,
+      required this.temp,
       required this.feelsLike,
       required this.low,
       required this.high,
@@ -23,6 +31,10 @@ class Weather {
   factory Weather.fromJson(Map<String, dynamic> json) {
     (json);
     return Weather(
+      long: json['coord']['lon'].toDouble(),
+      lat: json['coord']['lat'].toDouble(),
+      country: json['sys']['country'],
+      city: json['name'],
       temp: json['main']['temp'].toDouble(),
       feelsLike: json['main']['feels_like'].toDouble(),
       low: json['main']['temp_min'].toDouble(),

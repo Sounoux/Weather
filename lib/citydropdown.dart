@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'models/location.dart';
-import 'extensions.dart';
 
 class CityDropDown extends StatefulWidget {
   final List<Location> locations;
@@ -55,15 +54,7 @@ class _CityDropDownState extends State<CityDropDown> {
                                       TextSpan(
                                         children: <TextSpan>[
                                           TextSpan(
-                                              text:
-                                                  '${locations[index].city.capitalizeFirstOfEach}, ',
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16)),
-                                          TextSpan(
-                                              text: locations[index]
-                                                  .country
-                                                  .capitalizeFirstOfEach,
+                                              text: locations[index].country,
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.normal,
                                                   fontSize: 16)),
@@ -98,22 +89,8 @@ class _CityDropDownState extends State<CityDropDown> {
               ]),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [
-              Text.rich(
-                TextSpan(
-                  children: <TextSpan>[
-                    TextSpan(
-                        text: '${location.city.capitalizeFirstOfEach}, ',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                    TextSpan(
-                        text: location.country.capitalizeFirstOfEach,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.normal, fontSize: 16)),
-                  ],
-                ),
-              ),
-              const Icon(
+            children: const [
+              Icon(
                 Icons.keyboard_arrow_down_rounded,
                 color: Colors.black,
                 size: 24.0,

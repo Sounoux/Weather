@@ -4,7 +4,6 @@ import 'models/location.dart';
 import 'models/weather.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'extensions.dart';
 import 'package:intl/intl.dart';
 
 class CurrentWeatherPage extends StatefulWidget {
@@ -127,24 +126,166 @@ Widget createAppBar(
             TextSpan(
               children: <TextSpan>[
                 TextSpan(
-                    text: '${location.city.capitalizeFirstOfEach}, ',
+                    text: '${location.city}, ',
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 16)),
                 TextSpan(
-                    text: location.country.capitalizeFirstOfEach,
+                    text: location.country,
                     style: const TextStyle(
                         fontWeight: FontWeight.normal, fontSize: 16)),
               ],
             ),
           ),
-          const Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: Colors.black,
-            size: 24.0,
-            semanticLabel: 'Tap to change location',
-          ),
+          IconButton(
+              onPressed: () async {
+                showSearch(context: context, delegate: CitySearch());
+
+                // final results = await
+                //     showSearch(context: context, delegate: CitySearch());
+
+                // print('Result: $results');
+              },
+              icon: const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: Colors.black,
+                size: 24.0,
+                semanticLabel: 'Tap to change location',
+              )),
         ],
       ));
+}
+
+class CitySearch extends SearchDelegate<Location> {
+  List<Location>? locations;
+  @override
+  List<Widget> buildActions(BuildContext context) => [
+        IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            if (query.isEmpty) {
+              close(
+                  context,
+                  Location(
+                      city: "paris",
+                      country: "france",
+                      lat: "48.853",
+                      lon: "2.349"));
+            } else {
+              query = '';
+              showSuggestions(context);
+            }
+          },
+        )
+      ];
+
+  @override
+  Widget buildLeading(BuildContext context) => IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => close(
+            context,
+            Location(
+                city: "paris", country: "france", lat: "48.853", lon: "2.349")),
+      );
+
+  @override
+  Widget buildResults(BuildContext context) => FutureBuilder<Weather?>(
+        future: getWeather(city: query),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return const Center(child: CircularProgressIndicator());
+            default:
+              print(snapshot.hasData);
+              if (snapshot.hasError) {
+                return Container(
+                  color: Colors.black,
+                  alignment: Alignment.center,
+                  child: const Text(
+                    'Something went wrong!',
+                    style: TextStyle(fontSize: 28, color: Colors.white),
+                  ),
+                );
+              } else {
+                return CurrentWeatherPage(
+                    locations = [
+                      Location(
+                          city: snapshot.data!.city,
+                          country: snapshot.data!.country,
+                          lat: snapshot.data!.lat.toString(),
+                          lon: snapshot.data!.long.toString())
+                    ],
+                    context);
+              }
+          }
+        },
+      );
+
+  @override
+  Widget buildSuggestions(BuildContext context) => Container(
+        color: Colors.black,
+        child: FutureBuilder<List<String>>(
+          future: searchCities(query: query),
+          builder: (context, snapshot) {
+            if (query.isEmpty) return buildNoSuggestions();
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return const Center(child: CircularProgressIndicator());
+              default:
+                if (snapshot.hasError || snapshot.data!.isEmpty) {
+                  return buildNoSuggestions();
+                } else {
+                  return buildSuggestionsSuccess(snapshot.data!);
+                }
+            }
+          },
+        ),
+      );
+
+  Widget buildSuggestionsSuccess(List<String> suggestions) => ListView.builder(
+        itemCount: suggestions.length,
+        itemBuilder: (context, index) {
+          final suggestion = suggestions[index];
+          final queryText = suggestion.substring(0, query.length);
+          final remainingText = suggestion.substring(query.length);
+
+          return ListTile(
+            onTap: () {
+              query = suggestion;
+              showResults(context);
+            },
+            leading: const Icon(Icons.location_city),
+            title: RichText(
+              text: TextSpan(
+                text: queryText,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+                children: [
+                  TextSpan(
+                    text: remainingText,
+                    style: const TextStyle(
+                      color: Colors.white54,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
+  Widget buildNoSuggestions() => const Center(
+        child: Text(
+          'No suggestions!',
+          style: TextStyle(fontSize: 28, color: Colors.white),
+        ),
+      );
+
+  @override
+  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 Widget weatherDetailsBox(Weather _weather) {
@@ -268,7 +409,7 @@ Widget weatherBox(Weather _weather) {
                   Container(
                       margin: const EdgeInsets.all(5.0),
                       child: Text(
-                        _weather.description.capitalizeFirstOfEach,
+                        _weather.description,
                         style: const TextStyle(
                             fontWeight: FontWeight.normal,
                             fontSize: 16,
@@ -441,6 +582,38 @@ class Clipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(Clipper oldClipper) => false;
+}
+
+Future<List<String>> searchCities({required String query}) async {
+  const limit = 3;
+  String apiKey = "856b01315a5c75ab8c8f23eee3155494";
+  final url =
+      'https://api.openweathermap.org/geo/1.0/direct?q=$query&limit=$limit&appid=$apiKey';
+
+  final response = await http.get(Uri.parse(url));
+  final body = json.decode(response.body);
+
+  return body.map<String>((json) {
+    final city = json['name'];
+    final country = json['country'];
+
+    return '$city, $country';
+  }).toList();
+}
+
+Future<Weather?> getWeather({required String city}) async {
+  Weather? weather;
+  String apiKey = "856b01315a5c75ab8c8f23eee3155494";
+  final url =
+      'https://api.openweathermap.org/data/2.5/weather?q=$city&units=metric&appid=$apiKey';
+
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    weather = Weather.fromJson(jsonDecode(response.body));
+  }
+
+  return weather;
 }
 
 Future getCurrentWeather(Location location) async {
