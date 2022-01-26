@@ -105,7 +105,7 @@ Widget forcastViewsDaily(Location location) {
 Widget createAppBar(
     List<Location> locations, Location location, BuildContext context) {
   return Container(
-      padding: const EdgeInsets.only(left: 20, top: 15, bottom: 15, right: 20),
+      padding: const EdgeInsets.only(left: 20, top: 5, bottom: 5, right: 20),
       margin:
           const EdgeInsets.only(top: 35, left: 15.0, bottom: 15.0, right: 15.0),
       decoration: BoxDecoration(
@@ -149,7 +149,7 @@ Widget createAppBar(
                 Icons.keyboard_arrow_down_rounded,
                 color: Colors.black,
                 size: 24.0,
-                semanticLabel: 'Tap to change location',
+                semanticLabel: 'Taper pour changer de ville',
               )),
         ],
       ));
@@ -201,7 +201,7 @@ class CitySearch extends SearchDelegate<Location> {
                   color: Colors.black,
                   alignment: Alignment.center,
                   child: const Text(
-                    'Something went wrong!',
+                    'Quelque chose s est mal passé!',
                     style: TextStyle(fontSize: 28, color: Colors.white),
                   ),
                 );
@@ -279,7 +279,7 @@ class CitySearch extends SearchDelegate<Location> {
 
   Widget buildNoSuggestions() => const Center(
         child: Text(
-          'No suggestions!',
+          'Pas de suggestion!',
           style: TextStyle(fontSize: 28, color: Colors.white),
         ),
       );
@@ -309,7 +309,7 @@ Widget weatherDetailsBox(Weather _weather) {
             child: Column(
           children: [
             const Text(
-              "Wind",
+              "Vitesse",
               textAlign: TextAlign.left,
               style: TextStyle(
                   fontWeight: FontWeight.w600,
@@ -330,7 +330,7 @@ Widget weatherDetailsBox(Weather _weather) {
             child: Column(
           children: [
             const Text(
-              "Humidity",
+              "Humidité",
               textAlign: TextAlign.left,
               style: TextStyle(
                   fontWeight: FontWeight.w600,
@@ -351,7 +351,7 @@ Widget weatherDetailsBox(Weather _weather) {
             child: Column(
           children: [
             const Text(
-              "Pressure",
+              "Pression",
               textAlign: TextAlign.left,
               style: TextStyle(
                   fontWeight: FontWeight.w600,
@@ -380,18 +380,12 @@ Widget weatherBox(Weather _weather) {
       margin: const EdgeInsets.all(15.0),
       height: 160.0,
       decoration: const BoxDecoration(
-          color: Colors.indigoAccent,
+          image: DecorationImage(
+            image: AssetImage("assets/images/cloud4.jpg"),
+            fit: BoxFit.cover,
+          ),
           borderRadius: BorderRadius.all(Radius.circular(20))),
     ),
-    ClipPath(
-        clipper: Clipper(),
-        child: Container(
-            padding: const EdgeInsets.all(15.0),
-            margin: const EdgeInsets.all(15.0),
-            height: 160.0,
-            decoration: BoxDecoration(
-                color: Colors.indigoAccent[400],
-                borderRadius: const BorderRadius.all(Radius.circular(20))))),
     Container(
         padding: const EdgeInsets.all(15.0),
         margin: const EdgeInsets.all(15.0),
@@ -418,7 +412,7 @@ Widget weatherBox(Weather _weather) {
                   Container(
                       margin: const EdgeInsets.all(5.0),
                       child: Text(
-                        "H:${_weather.high.toInt()}° L:${_weather.low.toInt()}°",
+                        "Max:${_weather.high.toInt()}° Min:${_weather.low.toInt()}°",
                         textAlign: TextAlign.left,
                         style: const TextStyle(
                             fontWeight: FontWeight.normal,
@@ -438,7 +432,7 @@ Widget weatherBox(Weather _weather) {
               Container(
                   margin: const EdgeInsets.all(0),
                   child: Text(
-                    "Feels like ${_weather.feelsLike.toInt()}°",
+                    "Ressenti : ${_weather.feelsLike.toInt()}°",
                     textAlign: TextAlign.left,
                     style: const TextStyle(
                         fontWeight: FontWeight.normal,
@@ -524,7 +518,7 @@ String getTimeFromTimestamp(int timestamp) {
 
 String getDateFromTimestamp(int timestamp) {
   var date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-  var formatter = DateFormat('E');
+  var formatter = DateFormat('E, M/d/y');
   return formatter.format(date);
 }
 
@@ -550,38 +544,12 @@ Widget dailyBoxes(Forecast _forcast) {
                       child: getWeatherIconSmall(_forcast.daily[index].icon)),
                   Expanded(
                       child: Text(
-                    "${_forcast.daily[index].high.toInt()}/${_forcast.daily[index].low.toInt()}",
+                    "${_forcast.daily[index].high.toInt()}°/${_forcast.daily[index].low.toInt()}°",
                     textAlign: TextAlign.right,
                     style: const TextStyle(fontSize: 14, color: Colors.grey),
                   )),
                 ]));
           }));
-}
-
-class Clipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path = Path();
-    path.moveTo(0, size.height - 20);
-
-    path.quadraticBezierTo((size.width / 6) * 1, (size.height / 2) + 15,
-        (size.width / 3) * 1, size.height - 30);
-    path.quadraticBezierTo((size.width / 2) * 1, (size.height + 0),
-        (size.width / 3) * 2, (size.height / 4) * 3);
-    path.quadraticBezierTo((size.width / 6) * 5, (size.height / 2) - 20,
-        size.width, size.height - 60);
-
-    path.lineTo(size.width, size.height - 60);
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
-
-    path.close();
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(Clipper oldClipper) => false;
 }
 
 Future<List<String>> searchCities({required String query}) async {

@@ -8,7 +8,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   List<Location> locations = [
-    Location(city: "paris", country: "france", lat: "48.853", lon: "2.349")
+    Location(city: "Paris", country: "france", lat: "48.853", lon: "2.349")
   ];
 
   MyApp({Key? key}) : super(key: key);
