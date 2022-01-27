@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'models/forcast.dart';
 import 'models/location.dart';
 import 'models/weather.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'api.dart';
 import 'package:intl/intl.dart';
 
 class CurrentWeatherPage extends StatefulWidget {
@@ -58,7 +57,7 @@ Widget currentWeatherViews(
         return const Center(child: CircularProgressIndicator());
       }
     },
-    future: getCurrentWeather(location),
+    future: WeatherApi.getCurrentWeather(location),
   );
 }
 
@@ -78,7 +77,7 @@ Widget forcastViewsHourly(Location location) {
         return const Center(child: CircularProgressIndicator());
       }
     },
-    future: getForecast(location),
+    future: WeatherApi.getForecast(location),
   );
 }
 
@@ -98,7 +97,7 @@ Widget forcastViewsDaily(Location location) {
         return const Center(child: CircularProgressIndicator());
       }
     },
-    future: getForecast(location),
+    future: WeatherApi.getForecast(location),
   );
 }
 
@@ -139,11 +138,6 @@ Widget createAppBar(
           IconButton(
               onPressed: () async {
                 showSearch(context: context, delegate: CitySearch());
-
-                // final results = await
-                //     showSearch(context: context, delegate: CitySearch());
-
-                // print('Result: $results');
               },
               icon: const Icon(
                 Icons.keyboard_arrow_down_rounded,
@@ -189,7 +183,7 @@ class CitySearch extends SearchDelegate<Location> {
 
   @override
   Widget buildResults(BuildContext context) => FutureBuilder<Weather?>(
-        future: getWeather(city: query),
+        future: WeatherApi.getWeather(city: query),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
@@ -224,7 +218,7 @@ class CitySearch extends SearchDelegate<Location> {
   Widget buildSuggestions(BuildContext context) => Container(
         color: Colors.black,
         child: FutureBuilder<List<String>>(
-          future: searchCities(query: query),
+          future: WeatherApi.searchCities(query: query),
           builder: (context, snapshot) {
             if (query.isEmpty) return buildNoSuggestions();
             switch (snapshot.connectionState) {
@@ -550,69 +544,4 @@ Widget dailyBoxes(Forecast _forcast) {
                   )),
                 ]));
           }));
-}
-
-Future<List<String>> searchCities({required String query}) async {
-  const limit = 3;
-  String apiKey = "856b01315a5c75ab8c8f23eee3155494";
-  final url =
-      'https://api.openweathermap.org/geo/1.0/direct?q=$query&limit=$limit&appid=$apiKey';
-
-  final response = await http.get(Uri.parse(url));
-  final body = json.decode(response.body);
-
-  return body.map<String>((json) {
-    final city = json['name'];
-    final country = json['country'];
-
-    return '$city, $country';
-  }).toList();
-}
-
-Future<Weather?> getWeather({required String city}) async {
-  Weather? weather;
-  String apiKey = "856b01315a5c75ab8c8f23eee3155494";
-  final url =
-      'https://api.openweathermap.org/data/2.5/weather?q=$city&units=metric&appid=$apiKey';
-
-  final response = await http.get(Uri.parse(url));
-
-  if (response.statusCode == 200) {
-    weather = Weather.fromJson(jsonDecode(response.body));
-  }
-
-  return weather;
-}
-
-Future getCurrentWeather(Location location) async {
-  Weather? weather;
-  String city = location.city;
-  String apiKey = "856b01315a5c75ab8c8f23eee3155494";
-  var url =
-      "https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric";
-
-  final response = await http.get(Uri.parse(url));
-
-  if (response.statusCode == 200) {
-    weather = Weather.fromJson(jsonDecode(response.body));
-  }
-
-  return weather;
-}
-
-Future getForecast(Location location) async {
-  Forecast? forecast;
-  String apiKey = "856b01315a5c75ab8c8f23eee3155494";
-  String lat = location.lat;
-  String lon = location.lon;
-  var url =
-      "https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$lon&appid=$apiKey&units=metric";
-
-  final response = await http.get(Uri.parse(url));
-
-  if (response.statusCode == 200) {
-    forecast = Forecast.fromJson(jsonDecode(response.body));
-  }
-
-  return forecast;
 }
