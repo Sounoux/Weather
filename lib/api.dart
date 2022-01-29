@@ -10,7 +10,7 @@ class WeatherApi {
   static Future<List<String>> searchCities({required String query}) async {
     const limit = 3;
     final url =
-        'https://api.openweathermap.org/geo/1.0/direct?q=$query&limit=$limit&appid=$apiKey';
+        'https://api.openweathermap.org/geo/1.0/direct?q=$query&limit=$limit&appid=$apiKey&units=metric';
 
     final response = await http.get(Uri.parse(url));
     final body = json.decode(response.body);
