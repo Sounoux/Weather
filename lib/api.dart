@@ -37,32 +37,55 @@ class WeatherApi {
     return weather;
   }
 
-  static Future getCurrentWeather(Location location) async {
+  static Future getCurrentWeather(Location location, String unit) async {
     Weather? weather;
     String city = location.city;
-    var url =
-        "https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric";
+    if (unit == '') {
+      var url =
+          "https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey";
 
-    final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
-      weather = Weather.fromJson(jsonDecode(response.body));
+      if (response.statusCode == 200) {
+        weather = Weather.fromJson(jsonDecode(response.body));
+      }
+    } else {
+      var url =
+          "https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=$unit";
+
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        weather = Weather.fromJson(jsonDecode(response.body));
+      }
     }
 
     return weather;
   }
 
-  static Future getForecast(Location location) async {
+  static Future getForecast(Location location, String unit) async {
     Forecast? forecast;
     String lat = location.lat;
     String lon = location.lon;
-    var url =
-        "https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$lon&appid=$apiKey&units=metric";
 
-    final response = await http.get(Uri.parse(url));
+    if (unit == '') {
+      var url =
+          "https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$lon&appid=$apiKey";
 
-    if (response.statusCode == 200) {
-      forecast = Forecast.fromJson(jsonDecode(response.body));
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        forecast = Forecast.fromJson(jsonDecode(response.body));
+      }
+    } else {
+      var url =
+          "https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$lon&appid=$apiKey&units=$unit";
+
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        forecast = Forecast.fromJson(jsonDecode(response.body));
+      }
     }
 
     return forecast;

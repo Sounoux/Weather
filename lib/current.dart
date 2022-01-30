@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'models/forcast.dart';
 import 'models/location.dart';
@@ -9,60 +10,205 @@ import 'package:intl/intl.dart';
 class CurrentWeatherPage extends StatefulWidget {
   final List<Location> locations;
   final BuildContext context;
-  const CurrentWeatherPage(this.locations, this.context, {Key? key})
+  late String unit = '';
+  CurrentWeatherPage(this.locations, this.context, this.unit, {Key? key})
       : super(key: key);
 
   @override
   _CurrentWeatherPageState createState() =>
-      _CurrentWeatherPageState(locations, context);
+      _CurrentWeatherPageState(locations, context, unit);
 }
 
 class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
+  late String unit = '';
   final List<Location> locations;
   final Location location;
+  late List<bool> isSelected;
+
+  onButtonPressed(int value) {
+    if (value == 0) {
+      setState(() {
+        unit = '';
+      });
+    } else if (value == 1) {
+      setState(() {
+        unit = 'metric';
+      });
+    } else if (value == 2) {
+      setState(() {
+        unit = 'imperial';
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    isSelected = [true, false, false];
+    super.initState();
+  }
+
   @override
   final BuildContext context;
-  _CurrentWeatherPageState(this.locations, this.context)
+  _CurrentWeatherPageState(this.locations, this.context, this.unit)
       : location = locations[0];
+  String dropdownValue = '';
+  late String valueMenu = '${location.city}, ${location.country}';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.grey[100],
         body: ListView(children: <Widget>[
-          currentWeatherViews(locations, location, this.context),
-          forcastViewsHourly(location),
-          forcastViewsDaily(location),
+          currentWeatherViews(locations, location, this.context, unit),
+          forcastViewsHourly(location, unit),
+          forcastViewsDaily(location, unit),
         ]));
+  }
+
+  Widget currentWeatherViews(List<Location> locations, Location location,
+      BuildContext context, String unit) {
+    Weather? _weather;
+
+    return FutureBuilder(
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          _weather = snapshot.data as Weather?;
+          if (_weather == null) {
+            return const Text("Error getting weather");
+          } else {
+            return Column(children: [
+              createAppBar(locations, location, context),
+              weatherBox(_weather!),
+              weatherDetailsBox(_weather!),
+            ]);
+          }
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+      future: WeatherApi.getCurrentWeather(location, unit),
+    );
+  }
+
+  Widget createAppBar(
+      List<Location> locations, Location location, BuildContext context) {
+    return Container(
+        padding: const EdgeInsets.only(left: 20, top: 0, bottom: 5, right: 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+                onPressed: () async {
+                  showSearch(context: context, delegate: CitySearch());
+                },
+                icon: const Icon(
+                  CupertinoIcons.map_fill,
+                  color: Colors.black,
+                )),
+            Row(
+              children: <Widget>[
+                Container(
+                    padding: const EdgeInsets.only(
+                        left: 20, top: 0, bottom: 0, right: 20),
+                    margin: const EdgeInsets.only(
+                        top: 35, left: 15.0, bottom: 15.0, right: 15.0),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(60)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: const Offset(0, 3),
+                          )
+                        ]),
+                    child: Row(children: [
+                      const Icon(
+                        Icons.star_border,
+                        color: Colors.black,
+                        size: 24.0,
+                      ),
+                      DropdownButton<String>(
+                        value: valueMenu,
+                        icon: const Icon(Icons.arrow_downward),
+                        elevation: 16,
+                        style: const TextStyle(color: Colors.deepPurple),
+                        underline: Container(
+                          height: 2,
+                          color: Colors.deepPurpleAccent,
+                        ),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            valueMenu = newValue!;
+                          });
+                        },
+                        items: <String>[
+                          '${location.city}, ${location.country}',
+                          'Two',
+                          'Free',
+                          'Four'
+                        ].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ]))
+              ],
+            ),
+            Row(children: <Widget>[
+              RotatedBox(
+                quarterTurns: 1,
+                child: ToggleButtons(
+                  children: const <Widget>[
+                    RotatedBox(
+                        quarterTurns: 3,
+                        child: Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: Text(
+                            'Kelvin K',
+                          ),
+                        )),
+                    RotatedBox(
+                        quarterTurns: 3,
+                        child: Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: Text(
+                            'Celsius °C',
+                          ),
+                        )),
+                    RotatedBox(
+                        quarterTurns: 3,
+                        child: Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: Text(
+                            'Fahrenheit °F',
+                          ),
+                        )),
+                  ],
+                  // logic for button selection below
+                  onPressed: (int index) {
+                    setState(() {
+                      for (int i = 0; i < isSelected.length; i++) {
+                        isSelected[i] = i == index;
+                        onButtonPressed(index);
+                      }
+                    });
+                  },
+
+                  isSelected: isSelected,
+                ),
+              )
+            ])
+          ],
+        ));
   }
 }
 
-Widget currentWeatherViews(
-    List<Location> locations, Location location, BuildContext context) {
-  Weather? _weather;
-
-  return FutureBuilder(
-    builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        _weather = snapshot.data as Weather?;
-        if (_weather == null) {
-          return const Text("Error getting weather");
-        } else {
-          return Column(children: [
-            createAppBar(locations, location, context),
-            weatherBox(_weather!),
-            weatherDetailsBox(_weather!),
-          ]);
-        }
-      } else {
-        return const Center(child: CircularProgressIndicator());
-      }
-    },
-    future: WeatherApi.getCurrentWeather(location),
-  );
-}
-
-Widget forcastViewsHourly(Location location) {
+Widget forcastViewsHourly(Location location, String unit) {
   Forecast? _forcast;
 
   return FutureBuilder(
@@ -78,11 +224,11 @@ Widget forcastViewsHourly(Location location) {
         return const Center(child: CircularProgressIndicator());
       }
     },
-    future: WeatherApi.getForecast(location),
+    future: WeatherApi.getForecast(location, unit),
   );
 }
 
-Widget forcastViewsDaily(Location location) {
+Widget forcastViewsDaily(Location location, String unit) {
   Forecast? _forcast;
 
   return FutureBuilder(
@@ -98,56 +244,8 @@ Widget forcastViewsDaily(Location location) {
         return const Center(child: CircularProgressIndicator());
       }
     },
-    future: WeatherApi.getForecast(location),
+    future: WeatherApi.getForecast(location, unit),
   );
-}
-
-Widget createAppBar(
-    List<Location> locations, Location location, BuildContext context) {
-  return Container(
-      padding: const EdgeInsets.only(left: 20, top: 5, bottom: 5, right: 20),
-      margin:
-          const EdgeInsets.only(top: 35, left: 15.0, bottom: 15.0, right: 15.0),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.all(Radius.circular(60)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 5,
-              blurRadius: 7,
-              offset: const Offset(0, 3),
-            )
-          ]),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text.rich(
-            TextSpan(
-              children: <TextSpan>[
-                TextSpan(
-                    text: '${location.city}, ',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16)),
-                TextSpan(
-                    text: location.country,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.normal, fontSize: 16)),
-              ],
-            ),
-          ),
-          IconButton(
-              onPressed: () async {
-                showSearch(context: context, delegate: CitySearch());
-              },
-              icon: const Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: Colors.black,
-                size: 24.0,
-                semanticLabel: 'Taper pour changer de ville',
-              )),
-        ],
-      ));
 }
 
 Widget weatherDetailsBox(Weather _weather) {
