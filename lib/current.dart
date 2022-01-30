@@ -362,13 +362,21 @@ Widget weatherBox(Weather _weather) {
                   getWeatherIcon(_weather.icon),
                   Container(
                       margin: const EdgeInsets.all(5.0),
-                      child: Text(
-                        _weather.description,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 16,
-                            color: Colors.white),
-                      )),
+                      child: (_weather.description.contains('rain'))
+                          ? Text(
+                              _weather.description,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 16,
+                                  color: Colors.red),
+                            )
+                          : Text(
+                              _weather.description,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 16,
+                                  color: Colors.white),
+                            )),
                   Container(
                       margin: const EdgeInsets.all(5.0),
                       child: Text(
