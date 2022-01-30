@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'models/forcast.dart';
 import 'models/location.dart';
 import 'models/weather.dart';
 import 'api.dart';
+import 'screens/login_page.dart';
 import 'search.dart';
 import 'package:intl/intl.dart';
 
@@ -11,7 +13,9 @@ class CurrentWeatherPage extends StatefulWidget {
   final List<Location> locations;
   final BuildContext context;
   late String unit = '';
-  CurrentWeatherPage(this.locations, this.context, this.unit, {Key? key})
+  final User user;
+  CurrentWeatherPage(this.user, this.locations, this.context, this.unit,
+      {Key? key})
       : super(key: key);
 
   @override
@@ -20,6 +24,7 @@ class CurrentWeatherPage extends StatefulWidget {
 }
 
 class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
+  bool _isSigningOut = false;
   late String unit = '';
   final List<Location> locations;
   final Location location;
@@ -62,6 +67,32 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
           currentWeatherViews(locations, location, this.context, unit),
           forcastViewsHourly(location, unit),
           forcastViewsDaily(location, unit),
+          const SizedBox(height: 16.0),
+          _isSigningOut
+              ? const CircularProgressIndicator()
+              : ElevatedButton(
+                  onPressed: () async {
+                    setState(() {
+                      _isSigningOut = true;
+                    });
+                    await FirebaseAuth.instance.signOut();
+                    setState(() {
+                      _isSigningOut = false;
+                    });
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => const LoginPage(),
+                      ),
+                    );
+                  },
+                  child: const Text('Déconnexion'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
         ]));
   }
 
