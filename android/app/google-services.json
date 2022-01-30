@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "67924626767",
+    "project_id": "weatherfinale",
+    "storage_bucket": "weatherfinale.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67924626767:android:f1f5f13315e5528389c93a",
+        "android_client_info": {
+          "package_name": "com.example.appflutterweather2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "67924626767-4vsgrnb4q2hne54cugaemkiunu3mb3c1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAogV6Ll4ujfV8xV1isB71H7WvmnG3W2OA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "67924626767-4vsgrnb4q2hne54cugaemkiunu3mb3c1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
