@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'api.dart';
 import 'package:flutter/material.dart';
 import 'current.dart';
@@ -44,7 +45,7 @@ class CitySearch extends SearchDelegate<Location> {
             case ConnectionState.waiting:
               return const Center(child: CircularProgressIndicator());
             default:
-              print(snapshot.hasData);
+              (snapshot.hasData);
               if (snapshot.hasError) {
                 return Container(
                   color: Colors.black,
@@ -55,7 +56,9 @@ class CitySearch extends SearchDelegate<Location> {
                   ),
                 );
               } else {
+                User? user = FirebaseAuth.instance.currentUser;
                 return CurrentWeatherPage(
+                    user!,
                     locations = [
                       Location(
                           city: snapshot.data!.city,
@@ -63,7 +66,8 @@ class CitySearch extends SearchDelegate<Location> {
                           lat: snapshot.data!.lat.toString(),
                           lon: snapshot.data!.long.toString())
                     ],
-                    context);
+                    context,
+                    '');
               }
           }
         },
