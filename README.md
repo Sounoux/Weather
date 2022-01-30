@@ -35,9 +35,10 @@ Afin de pouvoir exécuter l'application sur votre poste, vous devez d'aborder in
 - Exécuter le projet avec la commande :  run flutter
 
 
-## Caractéristique
+## Caractéristiques
   * Recherche météo par ville
-  * Température actuelle, température max et min
+  * Température actuelle, température max et min, et le ressenti
+  * Température en Celsius, Kelvin et Fahrenheit
   * Prévisions météo à 7 jours
   * Icônes personnalisées pour chaque condition météo
   * Ressenti
