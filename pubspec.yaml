@@ -37,6 +37,7 @@ dependencies:
   http: any
   intl: any
   video_player: ^2.2.16
+  get: ^4.6.1
 
 dev_dependencies:
   flutter_test:
