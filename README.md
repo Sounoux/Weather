@@ -25,7 +25,15 @@ Afin de pouvoir exécuter l'application sur votre poste, vous devez d'aborder in
 
 
 ## Exécution
-- 
+- Télécharger le zip code et effectuer l'extraction
+- Ouvrir un nouveau projet flutter dans Visual Studio Code (View -> Command Palette ->Flutter : New Project -> choisir un emplacement et un nom d’application)
+- Copier du dossier github, le dossier < assets> ainsi que les fichiers qui se trouvent dans lib ( api, main, current, search et le dossier <models>) et les remplacer dans le nouveau projet créee 
+- Vérifier l'existance des dépendances nécessaires du fichier <pubspec.yaml> 
+- Ouvrir le fichier main.dart trouvé à la racine du référentiel cloné ( weather-app\lib\main.dart)
+- Installer les packages nécessaires avec la commande: flutter pub get
+- Configurer un emulator Android dans Android Studio, ou connecter un appareil Android physique qui a été configuré pour fonctionner en mode de débogage USB. 
+- Exécuter le projet avec la commande :  run flutter
+
 
 ## Caractéristique
   * Recherche météo par ville
