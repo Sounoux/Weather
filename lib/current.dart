@@ -1,3 +1,5 @@
+import 'package:appflutterweather2/listville.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +10,14 @@ import 'api.dart';
 import 'screens/login_page.dart';
 import 'search.dart';
 import 'package:intl/intl.dart';
+import 'services/fire_auth.dart';
 
 class CurrentWeatherPage extends StatefulWidget {
   final List<Location> locations;
   final BuildContext context;
   late String unit = '';
   final User user;
+
   CurrentWeatherPage(this.user, this.locations, this.context, this.unit,
       {Key? key})
       : super(key: key);
@@ -25,12 +29,30 @@ class CurrentWeatherPage extends StatefulWidget {
 
 class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   bool _isSigningOut = false;
+  Color _iconColor = Colors.blueGrey;
   late String unit = '';
   final List<Location> locations;
   final Location location;
   late List<bool> isSelected;
 
-  onButtonPressed(int value) {
+  getVilles() async {
+    User user = FirebaseAuth.instance.currentUser!;
+
+    var snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('ville')
+        .get();
+
+    List<String> _villeList = [];
+
+    for (var document in snapshot.docs) {
+      _villeList.add(document.id);
+    }
+    _villeList;
+  }
+
+  changeUnit(int value) {
     if (value == 0) {
       setState(() {
         unit = '';
@@ -49,6 +71,7 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   @override
   void initState() {
     isSelected = [true, false, false];
+    _iconColor = Colors.blueGrey;
     super.initState();
   }
 
@@ -140,9 +163,9 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
               children: <Widget>[
                 Container(
                     padding: const EdgeInsets.only(
-                        left: 20, top: 0, bottom: 0, right: 20),
+                        left: 5, top: 0, bottom: 0, right: 10),
                     margin: const EdgeInsets.only(
-                        top: 35, left: 15.0, bottom: 15.0, right: 15.0),
+                        top: 35, left: 10.0, bottom: 15.0, right: 15.0),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius:
@@ -156,37 +179,45 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
                           )
                         ]),
                     child: Row(children: [
-                      const Icon(
-                        Icons.star_border,
-                        color: Colors.black,
-                        size: 24.0,
-                      ),
-                      DropdownButton<String>(
-                        value: valueMenu,
-                        icon: const Icon(Icons.arrow_downward),
-                        elevation: 16,
-                        style: const TextStyle(color: Colors.deepPurple),
-                        underline: Container(
-                          height: 2,
-                          color: Colors.deepPurpleAccent,
+                      IconButton(
+                          icon: Icon(Icons.star, color: _iconColor),
+                          onPressed: () {
+                            setState(() {
+                              _iconColor = Colors.black; //<--update alreadSaved
+                            });
+                            addpreferences(
+                                '${location.city}',
+                                '${location.country}',
+                                '${location.lat}',
+                                '${location.lon}');
+                          }),
+                      Text.rich(
+                        TextSpan(
+                          children: <TextSpan>[
+                            TextSpan(
+                                text: '${location.city}, ',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16)),
+                            TextSpan(
+                                text: location.country,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 16)),
+                          ],
                         ),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            valueMenu = newValue!;
-                          });
-                        },
-                        items: <String>[
-                          '${location.city}, ${location.country}',
-                          'Two',
-                          'Free',
-                          'Four'
-                        ].map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
                       ),
+                      IconButton(
+                          onPressed: () async {
+                            Navigator.push(context, MaterialPageRoute<void>(
+                                builder: (BuildContext context) {
+                              return NoteList();
+                            }));
+                          },
+                          icon: const Icon(
+                            Icons.list,
+                            color: Colors.black,
+                            size: 24.0,
+                          )),
                     ]))
               ],
             ),
@@ -225,7 +256,7 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
                     setState(() {
                       for (int i = 0; i < isSelected.length; i++) {
                         isSelected[i] = i == index;
-                        onButtonPressed(index);
+                        changeUnit(index);
                       }
                     });
                   },
@@ -236,6 +267,10 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
             ])
           ],
         ));
+  }
+
+  void addpreferences(String s, String c, String lat, String lon) {
+    FireAuth.addpreferences(s, c, lat, lon);
   }
 }
 

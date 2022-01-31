@@ -1,5 +1,8 @@
 import 'package:appflutterweather2/current.dart';
-import 'package:appflutterweather2/datatypes/validator.dart';
+import 'package:appflutterweather2/datatypes/emailtype.dart';
+import 'package:appflutterweather2/datatypes/nametype.dart';
+import 'package:appflutterweather2/datatypes/passwordtype.dart';
+import 'package:appflutterweather2/datatypes/phonetype.dart';
 import 'package:appflutterweather2/models/location.dart';
 import 'package:appflutterweather2/screens/login_page.dart';
 import 'package:appflutterweather2/services/fire_auth.dart';
@@ -16,11 +19,13 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final _registerFormKey = GlobalKey<FormState>();
 
+  final _phoneTextController = TextEditingController();
   final _nameTextController = TextEditingController();
   final _emailTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
 
   final _focusName = FocusNode();
+  final _focusPhone = FocusNode();
   final _focusEmail = FocusNode();
   final _focusPassword = FocusNode();
 
@@ -51,7 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       TextFormField(
                         controller: _nameTextController,
                         focusNode: _focusName,
-                        validator: (value) => Validator.validateName(
+                        validator: (value) => NameType.validateName(
                           name: value,
                         ),
                         decoration: InputDecoration(
@@ -68,7 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       TextFormField(
                         controller: _emailTextController,
                         focusNode: _focusEmail,
-                        validator: (value) => Validator.validateEmail(
+                        validator: (value) => EmailType.validateEmail(
                           email: value,
                         ),
                         decoration: InputDecoration(
@@ -83,10 +88,27 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 16.0),
                       TextFormField(
+                        controller: _phoneTextController,
+                        focusNode: _focusPhone,
+                        validator: (value) => PhoneType.validatePhone(
+                          phone: value,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: "Numéro de téléphone",
+                          errorBorder: UnderlineInputBorder(
+                            borderRadius: BorderRadius.circular(6.0),
+                            borderSide: const BorderSide(
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      TextFormField(
                         controller: _passwordTextController,
                         focusNode: _focusPassword,
                         obscureText: true,
-                        validator: (value) => Validator.validatePassword(
+                        validator: (value) => PasswordType.validatePassword(
                           password: value,
                         ),
                         decoration: InputDecoration(

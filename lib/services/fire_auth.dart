@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FireAuth {
@@ -20,6 +21,15 @@ class FireAuth {
       await user!.updateProfile(displayName: name);
       await user.reload();
       user = auth.currentUser;
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('users');
+      users
+          .doc(user!.uid)
+          .set({
+            'email': email,
+          })
+          .then((value) => print("User Added"))
+          .catchError((error) => print("Failed to add user: $error"));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -31,6 +41,21 @@ class FireAuth {
     }
 
     return user;
+  }
+
+  static Future<User?> addpreferences(
+      String ville, String country, String lat, String lon) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user;
+    user = auth.currentUser;
+    CollectionReference users = FirebaseFirestore.instance.collection('users');
+    users
+        .doc(user!.uid)
+        .collection('ville')
+        .doc(ville)
+        .set({'ville': ville, 'country': country, 'lat': lat, 'long': lon})
+        .then((value) => print("Ville Added"))
+        .catchError((error) => print("Failed to add ville: $error"));
   }
 
   // For signing in an user (have already registered)

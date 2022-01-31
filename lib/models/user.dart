@@ -1,26 +1,30 @@
 import 'dart:convert';
-
+import 'package:appflutterweather2/datatypes/emailtype.dart';
 import 'package:appflutterweather2/datatypes/nametype.dart';
+import 'package:appflutterweather2/datatypes/passwordtype.dart';
 import 'package:appflutterweather2/datatypes/phonetype.dart';
 
-class User {
+class UserLogin {
   final int id;
-  final String email;
+  final EmailType email;
+  final PasswordType password;
   final PhoneType phone;
   final NameType name;
 
-  User(
+  UserLogin(
       {required this.id,
       required this.email,
+      required this.password,
       required this.phone,
       required this.name});
 
-  factory User.fromReqBody(String body) {
+  factory UserLogin.fromReqBody(String body) {
     Map<String, dynamic> json = jsonDecode(body);
 
-    return User(
+    return UserLogin(
         id: json['id'],
         email: json['email'],
+        password: json['password'],
         name: json['name'],
         phone: json['phone']);
   }

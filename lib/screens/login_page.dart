@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:appflutterweather2/current.dart';
-import 'package:appflutterweather2/datatypes/validator.dart';
+import 'package:appflutterweather2/datatypes/emailtype.dart';
+import 'package:appflutterweather2/datatypes/passwordtype.dart';
 import 'package:appflutterweather2/models/location.dart';
 import 'package:appflutterweather2/services/fire_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -83,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
                           TextFormField(
                             controller: _emailTextController,
                             focusNode: _focusEmail,
-                            validator: (value) => Validator.validateEmail(
+                            validator: (value) => EmailType.validateEmail(
                               email: value,
                             ),
                             decoration: InputDecoration(
@@ -101,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                             controller: _passwordTextController,
                             focusNode: _focusPassword,
                             obscureText: true,
-                            validator: (value) => Validator.validatePassword(
+                            validator: (value) => PasswordType.validatePassword(
                               password: value,
                             ),
                             decoration: InputDecoration(
