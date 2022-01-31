@@ -50,6 +50,9 @@ Afin de pouvoir exécuter l'application sur votre poste, vous devez d'aborder in
   * Vitesse du vent
   * Humidité
   * Pression
+  * Alerte en rouge quand il pleut dans une ville
+  * Gestion compte utilisateur
+  * Liste de villes enregistrées par l'utilisateur
 
  
 
