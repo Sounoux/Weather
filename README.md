@@ -44,7 +44,7 @@ Afin de pouvoir exécuter l'application sur votre poste, vous devez d'aborder in
   * Recherche météo par ville
   * Température actuelle, température max et min, et le ressenti
   * Température en Celsius, Kelvin et Fahrenheit
-  * Prévisions météo à 7 jours
+  * Prévisions météo à 7 jours et toutes les heures de la journée
   * Icônes personnalisées pour chaque condition météo
   * Ressenti
   * Vitesse du vent
