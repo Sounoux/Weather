@@ -4,8 +4,9 @@ C’est une application de prévisions météo, créée à l’aide de Flutter e
 Le projet utilise l' API OpenWeatherMap pour récupérer une liste de villes et leurs données météorologiques respectives telles que la température minimale et maximale, l'état météorologique, la date, la vitesse, l’humidité et la pression.
 Vous pouvez trouver les données météorologiques en direct de n’importe quelle ville que vous voulez savoir.
 
-![img3](https://user-images.githubusercontent.com/94973789/151704435-530c6292-7a18-459a-918f-64e7ce3596ff.PNG)
-![img2](https://user-images.githubusercontent.com/94973789/151704212-22568791-728a-4228-90b0-31c042c6a718.PNG)
+![d5639200-6666-44c1-a6bd-2abaf90fe513](https://user-images.githubusercontent.com/94973789/151840786-bf1fd088-8c37-4c25-bf3b-e306b4129efa.jpg)
+![951eb1e7-9b6e-41c7-b657-f00cb63ac12a](https://user-images.githubusercontent.com/94973789/151840789-eeda2776-ed23-45d1-8971-cb6693f889be.jpg)
+
 
 
 ### Exigences 
